@@ -3,7 +3,6 @@
 
 import {zodResolver} from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -37,7 +36,6 @@ export function ForgotPasswordForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading,setIsLoading]=useState(false)
-  const router=useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -49,7 +49,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
                 If this was you, click the button below to reset your password.
               </Text>
               <Text className="text-[16px] text-gray-700 leading-[24px] m-0 mb-[24px]">
-                If you didn't request this password reset, you can safely ignore this email. 
+                If you didn&apos;t request this password reset, you can safely ignore this email. 
                 Your password will remain unchanged.
               </Text>
             </Section>
@@ -67,7 +67,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
             {/* Alternative Link */}
             <Section className="mb-[32px]">
               <Text className="text-[14px] text-gray-600 leading-[20px] m-0 mb-[8px]">
-                If the button above doesn't work, copy and paste this link into your browser:
+                If the button above doesn&apos;t work, copy and paste this link into your browser:
               </Text>
               <Link
                 href={resetUrl}

@@ -25,7 +25,7 @@ import { signUp } from "@/server/users";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Link, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 const formSchema = z.object({
   username: z.string().min(8),
@@ -158,12 +158,12 @@ export function RegisterForm({
                           </FormItem>
                         )}
                       />
-                      <a
-                        href="#"
+                      <Link
+                        href="/forgot-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>

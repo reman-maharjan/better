@@ -23,6 +23,27 @@ export const signIn=async(email:string,password:string)=>{
     }}
 }
 
+export const forgotPassword=async(email:string)=>{
+    try{
+    await auth.api.forgetPassword({
+        body:{
+            email,
+            redirectTo: "/reset-password"
+        }   
+    })
+    return{
+        success: true,
+        message:"Password reset email sent"
+    }
+    
+    }catch(error){  
+    const e=error as Error
+        return{    
+        success: false,
+        message:e.message || "An unknown error occured"
+    }}
+}
+
 export const signUp=async(username:string,email:string,password:string)=>{
     try{
     await auth.api.signUpEmail({

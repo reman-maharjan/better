@@ -53,8 +53,7 @@ export const signUp=async(username:string,email:string,password:string)=>{
         body:{
             email,
             password,
-            name:username,
-            callbackURL: "/verify-email"
+            name:username
         },
         headers: await headers()
     })
@@ -77,8 +76,7 @@ export const resendVerificationEmail=async(email:string)=>{
     console.log('🔄 Resending verification email to:', email);
     await auth.api.sendVerificationEmail({
         body:{
-            email,
-            callbackURL: "/verify-email"
+            email
         },
         headers: await headers()
     })

@@ -16,6 +16,9 @@ function VerifyEmailContent() {
     const handleVerifyEmail = async () => {
       const token = searchParams.get("token");
       
+      console.log('🔍 Verification page - URL params:', window.location.search);
+      console.log('🔍 Verification page - Token:', token);
+      
       if (!token) {
         setStatus("error");
         setMessage("Invalid verification link. No token provided.");
@@ -23,7 +26,9 @@ function VerifyEmailContent() {
       }
 
       try {
+        console.log('🔄 Calling verifyEmail function with token:', token);
         const result = await verifyEmail(token);
+        console.log('📋 Verification result:', result);
 
         if (result.success) {
           setStatus("success");
@@ -32,7 +37,8 @@ function VerifyEmailContent() {
           setStatus("error");
           setMessage(result.message || "Failed to verify email. The link may be expired or invalid.");
         }
-      } catch {
+      } catch (error) {
+        console.error('❌ Verification error:', error);
         setStatus("error");
         setMessage("An error occurred while verifying your email. Please try again.");
       }
@@ -71,6 +77,7 @@ function VerifyEmailContent() {
           
           <p className="text-sm text-gray-600 text-center">{message}</p>
           
+          
           {status !== "loading" && (
             <div className="flex flex-col space-y-2">
               <Button asChild className="w-full">
@@ -81,7 +88,7 @@ function VerifyEmailContent() {
               
               {status === "error" && (
                 <Button variant="outline" asChild className="w-full">
-                  <Link href="/signup">Try Signing Up Again</Link>
+                  <Link href="/register">Try Signing Up Again</Link>
                 </Button>
               )}
             </div>

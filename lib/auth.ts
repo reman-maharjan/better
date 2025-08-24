@@ -32,12 +32,17 @@ export const auth = betterAuth({
             // Validate environment variables at runtime
             validateEmailConfig();
             
+            // Construct proper verification URL with token
+            const verificationUrl = `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/verify-email?token=${_token}`;
+            
             console.log('🔄 Attempting to send verification email to:', user.email);
             console.log('📧 Email config:', {
                 from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
                 to: user.email,
                 hasApiKey: !!process.env.RESEND_API_KEY,
-                url: url
+                originalUrl: url,
+                verificationUrl: verificationUrl,
+                token: _token
             });
             
             try {
@@ -45,7 +50,7 @@ export const auth = betterAuth({
                     from : `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
                     to: user.email,
                     subject: "Verify your email address",
-                    react: VerifyEmail({username: user.name || user.email, verifyUrl: url }),
+                    react: VerifyEmail({username: user.name || user.email, verifyUrl: verificationUrl }),
                 });
                 console.log('✅ Verification email sent successfully:', result);
                 // Don't return the result - better-auth expects void

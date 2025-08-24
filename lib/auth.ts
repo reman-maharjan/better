@@ -8,29 +8,29 @@ import {Resend} from "resend"
 import ForgotPasswordEmail from "../components/emails/reset-password"
 import VerifyEmail from "@/components/emails/verify-email";
 
-// Validate required environment variables
-if (!process.env.RESEND_API_KEY) {
-    throw new Error('RESEND_API_KEY is required but not found in environment variables');
-}
-if (!process.env.EMAIL_SENDER_NAME) {
-    throw new Error('EMAIL_SENDER_NAME is required but not found in environment variables');
-}
-if (!process.env.EMAIL_SENDER_ADDRESS) {
-    throw new Error('EMAIL_SENDER_ADDRESS is required but not found in environment variables');
-}
+// Initialize Resend with fallback for build time
+const resend = new Resend(process.env.RESEND_API_KEY || 'build-time-placeholder');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Debug logging for environment variables
-console.log('Environment check:');
-console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY);
-console.log('EMAIL_SENDER_NAME:', process.env.EMAIL_SENDER_NAME);
-console.log('EMAIL_SENDER_ADDRESS:', process.env.EMAIL_SENDER_ADDRESS);
+// Runtime validation function
+const validateEmailConfig = () => {
+    if (!process.env.RESEND_API_KEY) {
+        throw new Error('RESEND_API_KEY is required but not found in environment variables');
+    }
+    if (!process.env.EMAIL_SENDER_NAME) {
+        throw new Error('EMAIL_SENDER_NAME is required but not found in environment variables');
+    }
+    if (!process.env.EMAIL_SENDER_ADDRESS) {
+        throw new Error('EMAIL_SENDER_ADDRESS is required but not found in environment variables');
+    }
+};
 
 
 export const auth = betterAuth({
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token: _token }) => {
+            // Validate environment variables at runtime
+            validateEmailConfig();
+            
             console.log('🔄 Attempting to send verification email to:', user.email);
             console.log('📧 Email config:', {
                 from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
@@ -68,6 +68,9 @@ export const auth = betterAuth({
     emailAndPassword:{
         enabled:true,   
         sendResetPassword:async({user,url})=>{
+            // Validate environment variables at runtime
+            validateEmailConfig();
+            
             try {
                 await resend.emails.send({
                     from:`${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,

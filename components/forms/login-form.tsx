@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {signIn} from "@/server/users"
+import {signIn, checkEmailVerification, resendVerificationEmail} from "@/server/users"
 import {z} from "zod"
 import {toast} from "sonner"
 import {useState} from "react"
@@ -39,6 +39,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading,setIsLoading]=useState(false)
+  const [showResendButton, setShowResendButton]=useState(false)
+  const [userEmail, setUserEmail]=useState("")
   const router=useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,15 +57,37 @@ export function LoginForm({
     })
   }
  
+  const resendVerification = async () => {
+    if (!userEmail) return
+    const result = await resendVerificationEmail(userEmail)
+    if (result.success) {
+      toast.success("Verification email sent! Check your inbox.")
+    } else {
+      toast.error(result.message)
+    }
+  }
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+  setIsLoading(true)
+  setUserEmail(values.email)
   const {success,message}=await signIn(values.email,values.password) 
   if(success){
-   toast.success(message as string) 
-   router.push("/dashboard")  
+    // Check if email is verified before allowing access to dashboard
+    const verificationCheck = await checkEmailVerification()
+    if(verificationCheck.isVerified) {
+      toast.success(message as string) 
+      router.push("/dashboard")  
+    } else {
+      toast.error("Please verify your email before logging in. Check your inbox for the verification link.")
+      setShowResendButton(true)
+      // Sign out the user since they shouldn't be logged in without verification
+      await authClient.signOut()
+    }
   }
   else{
     toast.error(message as string)
+    setShowResendButton(false)
   }
   setIsLoading(false)
   }
@@ -146,10 +170,20 @@ export function LoginForm({
                   )
                   }
                 </Button>
+                {showResendButton && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={resendVerification}
+                  >
+                    Resend Verification Email
+                  </Button>
+                )}
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="#" className="underline underline-offset-4">
+                <a href="/register" className="underline underline-offset-4">
                   Sign up
                 </a>
               </div>

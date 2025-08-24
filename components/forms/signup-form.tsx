@@ -28,6 +28,7 @@ import { useState } from "react";
 import {  Loader2 } from "lucide-react";
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client";
+
 const formSchema = z.object({
   username: z.string().min(8),
   email: z.string().email(),
@@ -58,14 +59,16 @@ export function RegisterForm({
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     const { success, message } = await signUp(
       values.username,
       values.email,
       values.password,
     );
     if (success) {
-      toast.success(`${message as string} Please check your email for verification`);
-      router.push("/dashboard");
+      toast.success(`${message as string} Please check your email for verification link before logging in.`);
+      // Don't redirect to dashboard - user needs to verify email first
+      router.push("/login");
     } else {
       toast.error(message as string);
     }
@@ -176,10 +179,10 @@ export function RegisterForm({
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
-                  <a href="#" className="underline underline-offset-4">
-                    Sign up
-                  </a>
+                  Already have acccount?
+                  <Link href="/login" className="underline underline-offset-4">
+Login
+                  </Link>
                 </div>
               </div>
             </form>

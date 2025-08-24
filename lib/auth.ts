@@ -26,6 +26,7 @@ const validateEmailConfig = () => {
 
 
 export const auth = betterAuth({
+    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token: _token }) => {
             // Validate environment variables at runtime
@@ -87,14 +88,14 @@ export const auth = betterAuth({
        requiredEmailVerification:true
     },
     database: drizzleAdapter(db, {
-        provider: "pg", // or "mysql", "sqlite"
+        provider: "pg",
         schema,
     }),
     plugins:[nextCookies()],
-    socialProviders:{
+    socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
         google:{
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret:process.env.GOOGLE_CLIENT_SECRET as string,
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         }
-    }
+    } : {}
 });

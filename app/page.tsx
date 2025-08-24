@@ -7,7 +7,7 @@ export default function AuthButtons() {
       <Link href="/login">
         <Button variant="secondary">Login</Button>
       </Link>
-      <Link href="/signup">
+      <Link href="/register">
         <Button variant="secondary">Signup</Button>
       </Link>
     </div>

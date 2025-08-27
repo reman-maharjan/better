@@ -47,16 +47,39 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 })
 
+export const organization=pgTable("organization",{
+id:text("id").primaryKey(),
+name:text("name").notNull(),
+slug:text("slug").notNull().unique(),
+logo:text("logo"),
+createdAt:timestamp("createdAt").notNull().defaultNow(),
+metadata:text("metadata")
+})
+
+export const member=pgTable("member",{
+  id:text("id").primaryKey(),
+  organizationId:text("organizationId").notNull().references(() => organization.id, { onDelete: "cascade" }),
+  userId:text("userId").notNull().references(() => user.id, { onDelete: "cascade" }),
+  role:text("role").notNull().default("member"),
+  createdAt:timestamp("createdAt").notNull().defaultNow()
+})
+
+export const invitation=pgTable("invitation",{
+  id:text("id").primaryKey(),
+  organizationId:text("organizationId").notNull().references(() => organization.id, { onDelete: "cascade" }),
+  email:text("email").notNull(),
+  role:text("role").notNull().default("member"),
+  status:text("status").notNull().default("pending"),
+  expiresAt:timestamp("expiresAt").notNull(),
+  inviterId:text("inviterId").notNull().references(() => user.id, { onDelete: "cascade" }),
+})
 
 export const schema={
     user,
     session,
     account,
-    verification
+    verification,
+    organization,
+    member,
+    invitation
 }
-
-
-
-
-
-

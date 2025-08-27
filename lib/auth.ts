@@ -7,6 +7,7 @@ import {nextCookies} from "better-auth/next-js"
 import {Resend} from "resend"
 import ForgotPasswordEmail from "../components/emails/reset-password"
 import VerifyEmail from "@/components/emails/verify-email";
+import {organization} from "better-auth/plugins/organization";
 
 // Initialize Resend with fallback for build time
 const resend = new Resend(process.env.RESEND_API_KEY || 'build-time-placeholder');
@@ -96,7 +97,7 @@ export const auth = betterAuth({
         provider: "pg",
         schema,
     }),
-    plugins:[nextCookies()],
+    plugins:[organization(),nextCookies()],
     socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
         google:{
             clientId: process.env.GOOGLE_CLIENT_ID,

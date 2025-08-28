@@ -9,7 +9,10 @@ export const user = pgTable("user", {
   role: text("role").notNull().default("user"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  activeOrganizationId: text("activeOrganizationId")
+  .references(() => organization.id, { onDelete: "set null" }),
 })
+
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
@@ -20,6 +23,8 @@ export const session = pgTable("session", {
   ipAddress: text("ipAddress"),
   userAgent: text("userAgent"),
   userId: text("userId").notNull().references(() => user.id, { onDelete: "cascade" }),
+  activeOrganizationId: text("activeOrganizationId")
+    .references(() => organization.id, { onDelete: "set null" }),
 })
 
 export const account = pgTable("account", {
@@ -55,6 +60,8 @@ logo:text("logo"),
 createdAt:timestamp("createdAt").notNull().defaultNow(),
 metadata:text("metadata")
 })
+
+export type Organization= typeof organization.$inferSelect
 
 export const member=pgTable("member",{
   id:text("id").primaryKey(),

@@ -27,23 +27,23 @@ export default function DashboardPage() {
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        const response = await fetch('/api/organizations')
-        if (!response.ok) {
-          throw new Error('Failed to fetch organizations')
-        }
-        const data = await response.json()
-        setOrganizations(data.organizations || [])
-      } catch (error) {
-        console.error('Error:', error)
-        toast.error('Failed to load organizations')
-      } finally {
-        setIsLoading(false)
+  const fetchOrganizations = async () => {
+    try {
+      const response = await fetch('/api/organizations')
+      if (!response.ok) {
+        throw new Error('Failed to fetch organizations')
       }
+      const data = await response.json()
+      setOrganizations(data.organizations || [])
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Failed to load organizations')
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchOrganizations()
   }, [])
 
@@ -62,27 +62,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-    <header className="absolute top-0 right-0 flex justify-end items-center p-4">
-        <ModeSwitcher/>
-    </header>
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center justify-between">
-          <h1 className="text-lg font-semibold">Dashboard</h1>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleLogout}
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
-        </div>
-      </header>
 
-      <main className="container py-8">
+      <div className="container flex h-14 items-center justify-between">
+        <h1 className="text-lg font-semibold">Dashboard</h1>
+       
+      </div>
+      <main className="container py-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Your Organizations</h2>
           <Dialog>
@@ -96,14 +82,22 @@ export default function DashboardPage() {
                   Create a new organization to get started.
                 </DialogDescription>
               </DialogHeader>
-              <CreateOrganizationForm />
+              <CreateOrganizationForm onSuccess={fetchOrganizations} />
             </DialogContent>
           </Dialog>
         </div>
 
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={handleLogout}
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </Button>
       
       </main>
     </div>
-    </>
   )
 }

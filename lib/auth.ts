@@ -9,6 +9,7 @@ import ForgotPasswordEmail from "../components/emails/reset-password"
 import VerifyEmail from "@/components/emails/verify-email";
 import {organization} from "better-auth/plugins/organization";
 import { getActiveOrganization } from "@/server/organization";
+import {member,admin,owner,ac} from "./auth/permission";
 
 // Initialize Resend with fallback for build time
 const resend = new Resend(process.env.RESEND_API_KEY || 'build-time-placeholder');
@@ -115,7 +116,16 @@ export const auth = betterAuth({
         provider: "pg",
         schema,
     }),
-    plugins:[organization(),nextCookies()],
+plugins:[organization({
+    ac,
+    roles:{
+        owner,
+        admin,
+        member,     
+    }
+}),nextCookies()],
+
+    
     socialProviders: process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
         google:{
             clientId: process.env.GOOGLE_CLIENT_ID,

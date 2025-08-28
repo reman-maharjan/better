@@ -1,11 +1,12 @@
-'use client'
+// app/dashboard/dashboard-client.tsx
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { LogOut } from "lucide-react"
+import Link from "next/link"
 import {
   Dialog,
   DialogContent,
@@ -15,37 +16,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { CreateOrganizationForm } from "@/components/forms/create-organization-form"
-import { ModeSwitcher } from "@/components/ui/mode-switcher"
 
 interface Organization {
-  id: string;
-  name: string;
+  id: string
+  name: string
+  slug: string
 }
 
-export default function DashboardPage() {
+export default function DashboardClient({ organizations }: { organizations: Organization[] }) {
   const router = useRouter()
-  const [organizations, setOrganizations] = useState<Organization[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  const fetchOrganizations = async () => {
-    try {
-      const response = await fetch('/api/organizations')
-      if (!response.ok) {
-        throw new Error('Failed to fetch organizations')
-      }
-      const data = await response.json()
-      setOrganizations(data.organizations || [])
-    } catch (error) {
-      console.error('Error:', error)
-      toast.error('Failed to load organizations')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchOrganizations()
-  }, [])
 
   const handleLogout = async () => {
     try {
@@ -57,17 +36,12 @@ export default function DashboardPage() {
     }
   }
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
-  }
-
   return (
     <div className="min-h-screen bg-background">
-
       <div className="container flex h-14 items-center justify-between">
         <h1 className="text-lg font-semibold">Dashboard</h1>
-       
       </div>
+
       <main className="container py-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Your Organizations</h2>
@@ -82,13 +56,13 @@ export default function DashboardPage() {
                   Create a new organization to get started.
                 </DialogDescription>
               </DialogHeader>
-              <CreateOrganizationForm onSuccess={fetchOrganizations} />
+              <CreateOrganizationForm />
             </DialogContent>
           </Dialog>
         </div>
 
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={handleLogout}
           className="flex items-center gap-2"
@@ -96,7 +70,16 @@ export default function DashboardPage() {
           <LogOut className="h-4 w-4" />
           Logout
         </Button>
-      
+
+        <div className="mt-6 flex flex-col gap-2">
+          {organizations.map((organization) => (
+            <Button variant="outline" key={organization.id} asChild>
+              <Link href={`/dashboard/organization/${organization.slug}`}>
+                {organization.name}
+              </Link>
+            </Button>
+          ))}
+        </div>
       </main>
     </div>
   )
